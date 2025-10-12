@@ -98,6 +98,14 @@ export class Question {
   answer_video: string;
 
   @ApiProperty({
+    example: 120,
+    description: "Answer video duration in seconds",
+    nullable: true,
+  })
+  @Column({ nullable: true })
+  video_duration: number;
+
+  @ApiProperty({
     example: "Izoh",
     description: "Comment",
     nullable: true,

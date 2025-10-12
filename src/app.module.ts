@@ -20,8 +20,8 @@ console.log('Fayllar serve qilinayotgan joy: ', path.resolve(process.cwd(), 'upl
     TypeOrmModule.forFeature([Answer, Question, Category, Template]),
     QuestionModule,
     ServeStaticModule.forRoot({
-  rootPath: path.resolve(process.cwd(), 'uploads'),
-  serveRoot: '/uploads',
+    rootPath: path.resolve(process.cwd(), 'uploads'),
+    serveRoot: '/uploads',
 }),
     UploadModule,
   ],

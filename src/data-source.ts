@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   port: Number(process.env.DB_PORT) || 5432,
   username: process.env.DB_USER || "postgres",
   password: process.env.DB_PASS || "1234",
-  database: process.env.DB_NAME || "nestjs_db",
+  database: process.env.DB_NAME || "new",
 
   entities: [Answer, Question, Category, Template], // Entitylar ro'yxati
   synchronize: true, // True bo'lsa, har safar server ishga tushganda jadvalni avtomatik yangilaydi (faqat dev muhitda)

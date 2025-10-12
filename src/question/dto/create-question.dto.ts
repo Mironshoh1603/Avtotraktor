@@ -82,6 +82,10 @@ export class CreateQuestionDto {
   answer_video?: string;
 
   @IsOptional()
+  @IsNumber()
+  video_duration?: number;
+
+  @IsOptional()
   @IsString()
   comment?: string;
 
