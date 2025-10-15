@@ -95,8 +95,8 @@ export class QuestionService {
   private async addVideoDurationToQuestions(
     questions: Question[]
   ): Promise<Question[]> {
-    const questionsWithDuration = questions;
-    return questionsWithDuration;
+    // Bazadagi video_duration maydonini o'zida saqlaydi, hech narsa qilish shart emas
+    return questions;
   }
 
   async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
@@ -136,18 +136,13 @@ export class QuestionService {
     }
 
     const [questions, total] = await query.getManyAndCount();
-
-    // Video duration qo'shish
-    const questionsWithDuration = await this.addVideoDurationToQuestions(
-      questions
-    );
-
+    // Bazadagi durationni qaytaradi
     return {
       total,
       page,
       pageSize,
       totalPages: Math.ceil(total / pageSize),
-      data: questionsWithDuration,
+      data: questions,
     };
   }
 
@@ -165,16 +160,7 @@ export class QuestionService {
       relations: ["answers"],
     });
 
-    if (!question) {
-      return null;
-    }
-
-    // Video duration qo'shish
-    if (question.answer_video) {
-      const duration = await this.getVideoDuration(question.answer_video);
-      question.video_duration = duration;
-    }
-
+    // Video duration bazadan olinadi
     return question;
   }
 
