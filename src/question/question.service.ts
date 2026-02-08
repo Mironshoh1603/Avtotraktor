@@ -333,20 +333,35 @@ export class QuestionService {
     lang: LangEnum,
     limit: number = 50
   ): Promise<Question[]> {
+    // 1. Get only IDs of matching questions (much faster than getting full objects)
+    const allIds = await this.questionRepository
+      .createQueryBuilder("question")
+      .select("question.id")
+      .where("question.lang = :lang", { lang })
+      .andWhere("question.status = 1")
+      .getMany();
+
+    if (allIds.length === 0) return [];
+
+    // 2. Shuffle IDs and pick 'limit' number of IDs
+    const shuffledIds = allIds
+      .map((q) => q.id)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, limit);
+
+    // 3. Fetch full data for only those specific IDs
     const questions = await this.questionRepository
       .createQueryBuilder("question")
       .leftJoinAndSelect("question.category", "category")
-      .andWhere("question.lang = :lang", { lang })
-      .orderBy("RANDOM()")
-      .limit(limit)
+      .whereInIds(shuffledIds)
       .getMany();
 
-    // Video duration qo'shish
-    const questionsWithDuration = await this.addVideoDurationToQuestions(
-      questions
-    );
+    // Final sort to maintain the random order from shuffledIds
+    const orderedQuestions = shuffledIds
+      .map((id) => questions.find((q) => q.id === id))
+      .filter((q): q is Question => !!q);
 
-    return questionsWithDuration;
+    return orderedQuestions;
   }
 
   async calculateTicketCount(
@@ -358,13 +373,10 @@ export class QuestionService {
     totalTickets: number;
     lang?: string;
   }> {
-    const query = this.questionRepository.createQueryBuilder("question");
+    const totalQuestions = await this.questionRepository.count({
+      where: lang ? { lang } : {},
+    });
 
-    if (lang) {
-      query.andWhere("question.lang = :lang", { lang });
-    }
-
-    const totalQuestions = await query.getCount();
     const totalTickets = Math.ceil(totalQuestions / questionsPerTicket);
 
     return {

@@ -20,7 +20,7 @@ export const AppDataSource = new DataSource({
 
   entities: [Answer, Question, Category, Template], // Entitylar ro'yxati
   synchronize: true, // True bo'lsa, har safar server ishga tushganda jadvalni avtomatik yangilaydi (faqat dev muhitda)
-  logging: true, // Konsolda SQL so'rovlarini chiqaradi
+  logging: false, // Konsolda SQL so'rovlarini chiqaradi
   migrations: ["dist/migrations/*.js"], // Migratsiyalar yo'li
   subscribers: [],
 });
