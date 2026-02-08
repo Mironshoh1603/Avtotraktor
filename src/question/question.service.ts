@@ -124,11 +124,9 @@ export class QuestionService {
 
     const query = this.questionRepository
       .createQueryBuilder("question")
-      .leftJoinAndSelect("question.category", "category")
-      .leftJoinAndSelect("question.templates", "templates")
       .orderBy("question.id", "ASC")
-      .skip(skip)
-      .take(limit);
+      .offset(skip)
+      .limit(limit);
 
     if (lang) {
       query.andWhere("question.lang = :lang", { lang });
@@ -156,11 +154,10 @@ export class QuestionService {
     const query = this.questionRepository
       .createQueryBuilder("question")
       .leftJoinAndSelect("question.category", "category")
-      .leftJoinAndSelect("question.templates", "templates")
       .where("question.category_id = :categoryId", { categoryId })
       .orderBy("question.id", "ASC")
-      .skip(skip)
-      .take(limit);
+      .offset(skip)
+      .limit(limit);
 
     if (lang) {
       query.andWhere("question.lang = :lang", { lang });
@@ -339,7 +336,6 @@ export class QuestionService {
     const questions = await this.questionRepository
       .createQueryBuilder("question")
       .leftJoinAndSelect("question.category", "category")
-      .leftJoinAndSelect("question.templates", "templates")
       .andWhere("question.lang = :lang", { lang })
       .orderBy("RANDOM()")
       .limit(limit)
