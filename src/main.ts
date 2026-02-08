@@ -10,6 +10,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "https://doc.mironshokh.uz",
+      "https://api.mironshokh.uz",
       "http://localhost:3000",
       "http://localhost:5173",
       "http://localhost:3001",

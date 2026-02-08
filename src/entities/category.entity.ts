@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from "typeorm";
 import { Question } from "./question.entity";
 import { ApiProperty } from "@nestjs/swagger";
 
@@ -21,6 +21,7 @@ export class Category {
   description: string;
 
   @ApiProperty({ example: 1, description: "Category status (1 = active)" })
+  @Index()
   @Column({ default: 1 })
   status: number;
 

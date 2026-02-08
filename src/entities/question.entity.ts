@@ -7,6 +7,7 @@ import {
   ManyToMany,
   JoinTable,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { Answer } from "./answer.entity";
 import { LangEnum } from "./lang.enum";
@@ -58,6 +59,7 @@ export class Question {
     enum: LangEnum,
     default: LangEnum.KR,
   })
+  @Index()
   @Column({
     type: "enum",
     enum: LangEnum,
@@ -70,6 +72,7 @@ export class Question {
     description: "Category ID",
     nullable: true,
   })
+  @Index()
   @Column({ nullable: true })
   category_id: number;
 
@@ -134,6 +137,7 @@ export class Question {
     description: "Question status (1 = active)",
     default: 1,
   })
+  @Index()
   @Column({ default: 1 })
   status: number;
 
