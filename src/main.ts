@@ -14,7 +14,7 @@ async function bootstrap() {
     .setTitle("Upload API")
     .setDescription("Fayllarni yuklash API")
     .setVersion("1.0")
-    .addServer("http://localhost:3001") // Lokal server qo'shish
+    .addServer("http://doc.mironshokh.uz") // Lokal server qo'shish
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api/docs", app, document);
