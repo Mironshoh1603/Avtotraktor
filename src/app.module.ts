@@ -8,6 +8,7 @@ import { Template } from "./entities/template.entity";
 // import { User } from './entities/user.entity';
 // import { Course } from './entities/course.entity';
 import { QuestionModule } from "./question/question.module";
+import { CategoryModule } from "./category/category.module";
 import { UploadModule } from "./upload/upload.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as path from 'path';
@@ -19,11 +20,12 @@ console.log('Fayllar serve qilinayotgan joy: ', path.resolve(process.cwd(), 'upl
     TypeOrmModule.forRoot(AppDataSource.options), // TypeORM konfiguratsiyasini ulash
     TypeOrmModule.forFeature([Answer, Question, Category, Template]),
     QuestionModule,
+    CategoryModule,
     ServeStaticModule.forRoot({
-    rootPath: path.resolve(process.cwd(), 'uploads'),
-    serveRoot: '/uploads',
-}),
+      rootPath: path.resolve(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
     UploadModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
