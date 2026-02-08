@@ -11,10 +11,10 @@ async function bootstrap() {
 
   // ✅ Swagger sozlamalari
   const config = new DocumentBuilder()
-    .setTitle("Upload API")
-    .setDescription("Fayllarni yuklash API")
+    .setTitle("Autotest API")
+    .setDescription("Autotest API")
     .setVersion("1.0")
-    .addServer("http://doc.mironshokh.uz") // Lokal server qo'shish
+    .addServer("http://api.mironshokh.uz") // Lokal server qo'shish
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api/docs", app, document);
