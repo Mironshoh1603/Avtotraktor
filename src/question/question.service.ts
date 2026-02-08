@@ -46,7 +46,7 @@ export class QuestionService {
     private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Template)
     private readonly templateRepository: Repository<Template>
-  ) {}
+  ) { }
 
   /**
    * Video faylning duration'ini olish (cache bilan)
@@ -119,9 +119,8 @@ export class QuestionService {
 
     return await this.questionRepository.save(question);
   }
-  async getAllQuestions(page: number, lang?: string) {
-    const pageSize = 50;
-    const skip = (page - 1) * pageSize;
+  async getAllQuestions(page: number, limit: number = 50, lang?: string) {
+    const skip = (page - 1) * limit;
 
     const query = this.questionRepository
       .createQueryBuilder("question")
@@ -129,7 +128,7 @@ export class QuestionService {
       .leftJoinAndSelect("question.templates", "templates")
       .orderBy("question.id", "ASC")
       .skip(skip)
-      .take(pageSize);
+      .take(limit);
 
     if (lang) {
       query.andWhere("question.lang = :lang", { lang });
@@ -140,8 +139,40 @@ export class QuestionService {
     return {
       total,
       page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      pageSize: limit,
+      totalPages: Math.ceil(total / limit),
+      data: questions,
+    };
+  }
+
+  async getQuestionsByCategory(
+    categoryId: number,
+    page: number = 1,
+    limit: number = 50,
+    lang?: string
+  ) {
+    const skip = (page - 1) * limit;
+
+    const query = this.questionRepository
+      .createQueryBuilder("question")
+      .leftJoinAndSelect("question.category", "category")
+      .leftJoinAndSelect("question.templates", "templates")
+      .where("question.category_id = :categoryId", { categoryId })
+      .orderBy("question.id", "ASC")
+      .skip(skip)
+      .take(limit);
+
+    if (lang) {
+      query.andWhere("question.lang = :lang", { lang });
+    }
+
+    const [questions, total] = await query.getManyAndCount();
+
+    return {
+      total,
+      page,
+      pageSize: limit,
+      totalPages: Math.ceil(total / limit),
       data: questions,
     };
   }
@@ -320,6 +351,32 @@ export class QuestionService {
     );
 
     return questionsWithDuration;
+  }
+
+  async calculateTicketCount(
+    questionsPerTicket: number,
+    lang?: LangEnum
+  ): Promise<{
+    totalQuestions: number;
+    questionsPerTicket: number;
+    totalTickets: number;
+    lang?: string;
+  }> {
+    const query = this.questionRepository.createQueryBuilder("question");
+
+    if (lang) {
+      query.andWhere("question.lang = :lang", { lang });
+    }
+
+    const totalQuestions = await query.getCount();
+    const totalTickets = Math.ceil(totalQuestions / questionsPerTicket);
+
+    return {
+      totalQuestions,
+      questionsPerTicket,
+      totalTickets,
+      ...(lang && { lang }),
+    };
   }
   async update(
     id: number,

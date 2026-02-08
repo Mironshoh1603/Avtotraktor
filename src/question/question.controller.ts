@@ -24,7 +24,7 @@ import { UpdateQuestionDto } from "./dto/update-question.dto";
 @ApiTags("Questions")
 @Controller("questions")
 export class QuestionController {
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(private readonly questionService: QuestionService) { }
 
   @Post()
   @ApiOperation({ summary: "Create a question" })
@@ -61,6 +61,13 @@ export class QuestionController {
     example: "uz",
     description: "Filter questions by language",
   })
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    type: Number,
+    example: 50,
+    description: "Number of questions per page (default: 50)",
+  })
   @ApiResponse({
     status: 200,
     description: "Returns paginated questions",
@@ -68,9 +75,10 @@ export class QuestionController {
   })
   async getAllQuestions(
     @Query("page") page: number = 1,
+    @Query("limit") limit: number = 50,
     @Query("lang") lang?: LangEnum
   ) {
-    return this.questionService.getAllQuestions(page, lang);
+    return this.questionService.getAllQuestions(page, limit, lang);
   }
 
   @Get("random")
@@ -100,6 +108,98 @@ export class QuestionController {
     @Query("limit") limit: number = 50
   ) {
     return this.questionService.getRandomQuestions(lang, limit);
+  }
+
+  @Get("tickets/count")
+  @ApiOperation({ summary: "Calculate total number of tickets" })
+  @ApiQuery({
+    name: "questionsPerTicket",
+    required: true,
+    type: Number,
+    example: 20,
+    description: "Number of questions per ticket",
+  })
+  @ApiQuery({
+    name: "lang",
+    required: false,
+    type: String,
+    enum: LangEnum,
+    example: "uz",
+    description: "Filter questions by language",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Returns total number of tickets that can be created",
+    schema: {
+      type: "object",
+      properties: {
+        totalQuestions: { type: "number", example: 800 },
+        questionsPerTicket: { type: "number", example: 20 },
+        totalTickets: { type: "number", example: 40 },
+        lang: { type: "string", example: "uz" },
+      },
+    },
+  })
+  async getTicketCount(
+    @Query("questionsPerTicket") questionsPerTicket: number,
+    @Query("lang") lang?: LangEnum
+  ) {
+    return this.questionService.calculateTicketCount(questionsPerTicket, lang);
+  }
+
+  @Get("category/:categoryId")
+  @ApiOperation({ summary: "Get questions by category ID" })
+  @ApiQuery({
+    name: "page",
+    required: false,
+    type: Number,
+    example: 1,
+    description: "Page number (default: 1)",
+  })
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    type: Number,
+    example: 50,
+    description: "Number of questions per page (default: 50)",
+  })
+  @ApiQuery({
+    name: "lang",
+    required: false,
+    type: String,
+    enum: LangEnum,
+    example: "uz",
+    description: "Filter questions by language",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Returns paginated questions for the specified category",
+    schema: {
+      type: "object",
+      properties: {
+        total: { type: "number", example: 150 },
+        page: { type: "number", example: 1 },
+        pageSize: { type: "number", example: 50 },
+        totalPages: { type: "number", example: 3 },
+        data: {
+          type: "array",
+          items: { $ref: "#/components/schemas/Question" },
+        },
+      },
+    },
+  })
+  async getQuestionsByCategory(
+    @Param("categoryId") categoryId: number,
+    @Query("page") page: number = 1,
+    @Query("limit") limit: number = 50,
+    @Query("lang") lang?: LangEnum
+  ) {
+    return this.questionService.getQuestionsByCategory(
+      categoryId,
+      page,
+      limit,
+      lang
+    );
   }
 
   @Get(":id")
@@ -153,30 +253,6 @@ export class QuestionController {
   @ApiOperation({ summary: "Delete a question" })
   async remove(@Param("id") id: number) {
     return this.questionService.remove(id);
-  }
-
-  @Post("import/lotin")
-  @ApiOperation({ summary: "Import questions from lotin.json" })
-  @ApiResponse({ status: 201, description: "Questions imported successfully" })
-  async importLotinQuestions(): Promise<string> {
-    await this.questionService.importQuestionsFromJson("./src/data/lotin.json");
-    return "Lotin savollar muvaffaqiyatli yuklandi!";
-  }
-
-  @Post("import/rus")
-  @ApiOperation({ summary: "Import questions from rus.json" })
-  @ApiResponse({ status: 201, description: "Questions imported successfully" })
-  async importRusQuestions(): Promise<string> {
-    await this.questionService.importQuestionsFromJson("./src/data/rus.json");
-    return "Rus savollar muvaffaqiyatli yuklandi!";
-  }
-
-  @Post("import/crill")
-  @ApiOperation({ summary: "Import questions from crill.json" })
-  @ApiResponse({ status: 201, description: "Questions imported successfully" })
-  async importCrillQuestions(): Promise<string> {
-    await this.questionService.importQuestionsFromJson("./src/data/crill.json");
-    return "Crill savollar muvaffaqiyatli yuklandi!";
   }
 
   @Post("import/all")
