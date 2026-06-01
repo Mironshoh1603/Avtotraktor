@@ -3,7 +3,6 @@ import { AppModule } from "./app.module";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
@@ -24,11 +23,12 @@ async function bootstrap() {
     .setTitle("Autotest API")
     .setDescription("Autotest API")
     .setVersion("1.0")
-    .addServer("https://api.mironshokh.uz") // Lokal server qo'shish
+    .addServer("http://192.168.3.54:3003/") // Lokal server qo'shish
+    .addServer("http://localhost:3003/") // Lokal server qo'shish
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api/docs", app, document);
 
-  await app.listen(3003);
+  await app.listen(3003, "0.0.0.0");
 }
 bootstrap();
