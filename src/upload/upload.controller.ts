@@ -13,7 +13,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
-import { Express } from 'express';
 import { multerConfig } from 'src/multer.config';
 
 @ApiTags('Upload')

@@ -68,6 +68,20 @@ export class QuestionController {
     example: 50,
     description: "Number of questions per page (default: 50)",
   })
+  @ApiQuery({
+    name: "category_id",
+    required: false,
+    type: Number,
+    example: 1,
+    description: "Filter questions by category ID",
+  })
+  @ApiQuery({
+    name: "search",
+    required: false,
+    type: String,
+    example: "matematik",
+    description: "Search in question text",
+  })
   @ApiResponse({
     status: 200,
     description: "Returns paginated questions",
@@ -76,9 +90,11 @@ export class QuestionController {
   async getAllQuestions(
     @Query("page") page: number = 1,
     @Query("limit") limit: number = 50,
-    @Query("lang") lang?: LangEnum
+    @Query("lang") lang?: LangEnum,
+    @Query("category_id") categoryId?: number,
+    @Query("search") search?: string
   ) {
-    return this.questionService.getAllQuestions(page, limit, lang);
+    return this.questionService.getAllQuestions(page, limit, lang, categoryId, search);
   }
 
   @Get("random")

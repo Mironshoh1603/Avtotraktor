@@ -119,7 +119,7 @@ export class QuestionService {
 
     return await this.questionRepository.save(question);
   }
-  async getAllQuestions(page: number, limit: number = 50, lang?: string) {
+  async getAllQuestions(page: number, limit: number = 50, lang?: string, categoryId?: number, search?: string) {
     const skip = (page - 1) * limit;
 
     const query = this.questionRepository
@@ -130,6 +130,14 @@ export class QuestionService {
 
     if (lang) {
       query.andWhere("question.lang = :lang", { lang });
+    }
+
+    if (categoryId) {
+      query.andWhere("question.category_id = :categoryId", { categoryId });
+    }
+
+    if (search) {
+      query.andWhere("question.question ILIKE :search", { search: `%${search}%` });
     }
 
     const [questions, total] = await query.getManyAndCount();
