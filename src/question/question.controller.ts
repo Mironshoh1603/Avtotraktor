@@ -7,6 +7,7 @@ import {
   Delete,
   Query,
   Patch,
+  UseGuards,
 } from "@nestjs/common";
 import { QuestionService } from "./question.service";
 import { CreateQuestionDto } from "./dto/create-question.dto";
@@ -16,10 +17,15 @@ import {
   ApiOperation,
   ApiBody,
   ApiQuery,
+  ApiBearerAuth,
 } from "@nestjs/swagger";
 import { Question } from "src/entities/question.entity";
 import { LangEnum } from "src/entities/lang.enum";
 import { UpdateQuestionDto } from "./dto/update-question.dto";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { RolesGuard } from "../auth/roles.guard";
+import { Roles } from "../auth/roles.decorator";
+import { UserRole } from "src/entities/user.entity";
 
 @ApiTags("Questions")
 @Controller("questions")
@@ -27,13 +33,19 @@ export class QuestionController {
   constructor(private readonly questionService: QuestionService) { }
 
   @Post()
-  @ApiOperation({ summary: "Create a question" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Create a question (Admin only)" })
   @ApiResponse({ status: 201, description: "Question created successfully" })
   async create(@Body() createQuestionDto: CreateQuestionDto) {
     return this.questionService.create(createQuestionDto);
   }
   @Post("bulk")
-  @ApiOperation({ summary: "Bulk create questions" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Bulk create questions (Admin only)" })
   @ApiResponse({ status: 201, description: "Questions successfully created" })
   @ApiBody({
     schema: {
@@ -224,7 +236,10 @@ export class QuestionController {
     return this.questionService.findOne(id);
   }
   @Patch(":id")
-  @ApiOperation({ summary: "Update a question" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update a question (Admin only)" })
   @ApiResponse({
     status: 200,
     description: "Question updated successfully",
@@ -238,7 +253,10 @@ export class QuestionController {
   }
 
   @Patch(":id/correct-option")
-  @ApiOperation({ summary: "Update correct option" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update correct option (Admin only)" })
   @ApiResponse({
     status: 200,
     description: "Correct option updated",
@@ -252,7 +270,10 @@ export class QuestionController {
   }
 
   @Patch(":id/image-path")
-  @ApiOperation({ summary: "Update question image path" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update question image path (Admin only)" })
   @ApiResponse({
     status: 200,
     description: "Image path updated",
@@ -266,13 +287,19 @@ export class QuestionController {
   }
 
   @Delete(":id")
-  @ApiOperation({ summary: "Delete a question" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Delete a question (Admin only)" })
   async remove(@Param("id") id: number) {
     return this.questionService.remove(id);
   }
 
   @Post("import/all")
-  @ApiOperation({ summary: "Import all questions from all JSON files" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Import all questions from all JSON files (Admin only)" })
   @ApiResponse({
     status: 201,
     description: "All questions imported successfully",
@@ -298,7 +325,10 @@ export class QuestionController {
   }
 
   @Delete("cleanup")
-  @ApiOperation({ summary: "Clean all questions and related data" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Clean all questions and related data (Admin only)" })
   @ApiResponse({ status: 200, description: "Database cleaned successfully" })
   async cleanupDatabase(): Promise<string> {
     await this.questionService.cleanupAllData();

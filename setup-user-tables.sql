@@ -27,8 +27,9 @@ CREATE TABLE IF NOT EXISTS user_results (
 );
 
 -- 3. Default admin user yaratish (agar yo'q bo'lsa)
-INSERT INTO users (username, password, role, status) 
-SELECT 'admin', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1
+-- Parol: admin123
+INSERT INTO users (username, password, role, status)
+SELECT 'admin', '$2b$10$qVYUwz6FEbXdlQH9YiXqEumDNlYP89gnXe4uR39mBtoTW8ktXnaFS', 'admin', 1
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = 'admin');
 
 -- Index'lar qo'shish
